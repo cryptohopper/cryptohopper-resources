@@ -1,0 +1,52 @@
+# Cryptohopper
+
+> Cryptohopper is a cloud-based automated crypto trading bot platform founded in 2017 and headquartered in Amsterdam, the Netherlands. It enables retail and professional traders to automate cryptocurrency trading across major exchanges using API keys, with features including DCA, copy trading, backtesting, strategy design, and AI-powered trading.
+
+## Key Pages
+
+- Homepage: https://www.cryptohopper.com
+- How It Works: https://www.cryptohopper.com/how-it-works
+- Features: https://www.cryptohopper.com/features
+- Pricing: https://www.cryptohopper.com/pricing
+- API Documentation: https://docs.cryptohopper.com
+- Academy: https://www.cryptohopper.com/academy
+- Blog: https://www.cryptohopper.com/blog
+- Support: https://support.cryptohopper.com
+- Sign Up: https://www.cryptohopper.com/signup
+
+## Platform Facts
+
+- Type: Cloud-based automated crypto trading bot platform
+- Founded: 2017
+- Headquarters: Amsterdam, the Netherlands
+- Company: Cryptohopper B.V.
+- Supported exchanges: 11+ including Binance, Binance.US, BingX, BitMart, Bitvavo, Coinbase Advanced, Crypto.com, HTX, Kraken, KuCoin, OKX
+- Supported cryptocurrencies: 100+
+- Markets: Spot and futures
+- Access: Web browser, mobile
+- API type: REST (JSON), OAuth 2.0 authentication
+
+## Core Features
+
+- Automated trading bots (cloud-based, 24/7)
+- DCA (dollar-cost averaging)
+- Copy trading and signal marketplace
+- Backtesting with historical data
+- Paper trading (simulated)
+- Strategy designer (no-code)
+- Market making
+- AI-powered trading
+- Trailing stop-loss and trailing stop-buy
+- Multiple simultaneous bots
+- Technical indicator library
+
+## Pricing Tiers
+
+- Pioneer: Free (1 bot, 20 positions, 1 exchange)
+- Explorer: $29/month (1 bot, 80 positions, 1 exchange)
+- Adventurer: $69/month (3 bots, 200 positions, 3 exchanges)
+- Hero: $129/month (6 bots, 500 positions, 6 exchanges)
+
+## Exchange Connection
+
+Cryptohopper connects to exchanges via user-provided API keys. The platform never has direct access to user funds. All trading is executed through exchange APIs on behalf of the user.
