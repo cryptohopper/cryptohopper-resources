@@ -1,6 +1,6 @@
 # Versioning policy — Cryptohopper official SDKs and CLI
 
-This document is the single source of truth for how the official Cryptohopper developer packages — the Node.js, Python, Go, Ruby, Rust SDKs, and the `cryptohopper` CLI — are versioned, released, and deprecated. Each repo's `README.md` links here.
+This document is the single source of truth for how the official Cryptohopper developer packages — the Node.js, Python, Go, Ruby, Rust, PHP SDKs, and the `cryptohopper` CLI — are versioned, released, and deprecated. Each repo's `README.md` links here.
 
 ## Repositories covered
 
@@ -11,9 +11,10 @@ This document is the single source of truth for how the official Cryptohopper de
 | `github.com/cryptohopper/cryptohopper-go-sdk` | Go proxy | [`cryptohopper-go-sdk`](https://github.com/cryptohopper/cryptohopper-go-sdk) | `v*` |
 | `cryptohopper` (Ruby) | RubyGems | [`cryptohopper-ruby-sdk`](https://github.com/cryptohopper/cryptohopper-ruby-sdk) | `rb-v*` |
 | `cryptohopper` (Rust) | crates.io | [`cryptohopper-rust-sdk`](https://github.com/cryptohopper/cryptohopper-rust-sdk) | `rs-v*` |
+| `cryptohopper/sdk` (PHP) | Packagist | [`cryptohopper-php-sdk`](https://github.com/cryptohopper/cryptohopper-php-sdk) | `v*` |
 | `@cryptohopper/cli` (CLI) | npm + GitHub Releases | [`cryptohopper-cli`](https://github.com/cryptohopper/cryptohopper-cli) | `cli-v*` |
 
-Go requires bare `v*` tags because the module proxy reads the tag directly as the module version. Every other repo uses a prefixed tag so multiple languages or tools can coexist in the same org-wide release stream.
+Go and PHP use bare `v*` tags. Go's module proxy reads the tag directly as the module version, and Packagist reads tags directly as the SemVer version — both reject prefixed tag names. Every other repo uses a prefixed tag so multiple languages or tools can coexist in the same org-wide release stream.
 
 ## Semantic versioning
 
@@ -79,6 +80,7 @@ Every SDK's release workflow refuses to publish if the tag and the manifest disa
 - Go — workflow reads the bare tag and the module's version constant.
 - Ruby — workflow reads `lib/cryptohopper/version.rb` and compares against `${GITHUB_REF_NAME#rb-v}`.
 - Rust — workflow reads `Cargo.toml#package.version` and compares against `${GITHUB_REF_NAME#rs-v}`.
+- PHP — workflow reads `src/Version.php#VERSION` and compares against `${GITHUB_REF_NAME#v}`.
 
 If the two disagree, the workflow fails before touching the registry. This has already caught one accidental tag on the Node SDK where `package.json` had not been bumped — the publish was aborted and the tag was corrected before it ever hit npm.
 
@@ -88,6 +90,7 @@ If the two disagree, the workflow fails before touching the registry. This has a
 - **PyPI** (Python SDK) — [Trusted Publishing via OIDC](https://docs.pypi.org/trusted-publishers/). No API token is stored in the repo.
 - **RubyGems** (Ruby SDK) — Trusted Publishing via OIDC using `rubygems/configure-rubygems-credentials@v1`. No API key in the repo.
 - **crates.io** (Rust SDK) — classic `CARGO_REGISTRY_TOKEN` secret. crates.io does not offer OIDC publishing as of this writing; we will migrate when it does.
+- **Packagist** (PHP SDK) — nothing to authenticate in the release workflow. A repo webhook pings Packagist on every push; Packagist then pulls the tag directly from the public GitHub repo.
 - **Go proxy** — nothing to authenticate. The proxy fetches the tag directly from the public GitHub repo.
 
 ## Deprecation policy
