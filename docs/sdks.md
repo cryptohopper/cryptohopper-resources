@@ -1,6 +1,6 @@
 # Cryptohopper official SDKs and CLI
 
-Cryptohopper ships official clients for six languages and a standalone CLI. Every one hits the same Public API v1 at `https://api.cryptohopper.com/v1`, uses the same OAuth2 bearer-token auth, and speaks the shared error taxonomy documented below.
+Cryptohopper ships official clients for seven languages and a standalone CLI. Every one hits the same Public API v1 at `https://api.cryptohopper.com/v1`, uses the same OAuth2 bearer-token auth, and speaks the shared error taxonomy documented below.
 
 ## At a glance
 
@@ -12,7 +12,8 @@ Cryptohopper ships official clients for six languages and a standalone CLI. Ever
 | Ruby | `cryptohopper` | [RubyGems](https://rubygems.org/gems/cryptohopper) | [`cryptohopper-ruby-sdk`](https://github.com/cryptohopper/cryptohopper-ruby-sdk) | 0.1.0.pre.alpha.1 |
 | Rust | `cryptohopper` | [crates.io](https://crates.io/crates/cryptohopper) | [`cryptohopper-rust-sdk`](https://github.com/cryptohopper/cryptohopper-rust-sdk) | 0.1.0-alpha.1 |
 | PHP | `cryptohopper/sdk` | [Packagist](https://packagist.org/packages/cryptohopper/sdk) | [`cryptohopper-php-sdk`](https://github.com/cryptohopper/cryptohopper-php-sdk) | 0.1.0-alpha.1 |
-| CLI | `@cryptohopper/cli` + binaries | [npm](https://www.npmjs.com/package/@cryptohopper/cli) + [Releases](https://github.com/cryptohopper/cryptohopper-cli/releases) | [`cryptohopper-cli`](https://github.com/cryptohopper/cryptohopper-cli) | 0.5.0-alpha.1 |
+| Dart / Flutter | `cryptohopper` | [pub.dev](https://pub.dev/packages/cryptohopper) | [`cryptohopper-dart-sdk`](https://github.com/cryptohopper/cryptohopper-dart-sdk) | 0.1.0-alpha.1 |
+| CLI | `@cryptohopper/cli` + binaries | [npm](https://www.npmjs.com/package/@cryptohopper/cli) + [Releases](https://github.com/cryptohopper/cryptohopper-cli/releases) | [`cryptohopper-cli`](https://github.com/cryptohopper/cryptohopper-cli) | 0.5.1-alpha.1 |
 
 All SDKs currently cover the **same 18 public API domains**: `ai`, `app`, `arbitrage`, `backtest`, `chart`, `exchange`, `hoppers`, `market`, `marketmaker`, `platform`, `signals`, `social`, `strategy`, `subscription`, `template`, `tournaments`, `user`, `webhooks`. The CLI surfaces a pragmatic subset of these as subcommands; anything not yet wired into the CLI is still reachable through the Node SDK which the CLI consumes internally.
 
