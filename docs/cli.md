@@ -80,7 +80,15 @@ cryptohopper orders <hopper-id>          # Recent orders, table form
 
 ### Market data (public, no auth)
 ```bash
-cryptohopper ticker <exchange> <market>  # e.g. cryptohopper ticker binance BTC/USDT
+cryptohopper ticker <exchange> <market>     # e.g. cryptohopper ticker binance BTC/USDT
+cryptohopper exchange list                   # All supported exchanges (alias: ls)
+cryptohopper exchange markets <exchange>     # Trading pairs on an exchange
+```
+
+### Strategies
+```bash
+cryptohopper strategy list                   # All your saved strategies (alias: ls)
+cryptohopper strategy get <id>               # Pretty-print a strategy's config
 ```
 
 ### Backtests
