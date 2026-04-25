@@ -14,7 +14,7 @@ Cryptohopper ships official clients for eight languages and a standalone CLI. Ev
 | PHP | `cryptohopper/sdk` | [Packagist](https://packagist.org/packages/cryptohopper/sdk) | [`cryptohopper-php-sdk`](https://github.com/cryptohopper/cryptohopper-php-sdk) | 0.1.0-alpha.1 |
 | Dart / Flutter | `cryptohopper` | [pub.dev](https://pub.dev/packages/cryptohopper) | [`cryptohopper-dart-sdk`](https://github.com/cryptohopper/cryptohopper-dart-sdk) | 0.1.0-alpha.1 |
 | Swift | `Cryptohopper` (SwiftPM) | git tag | [`cryptohopper-swift-sdk`](https://github.com/cryptohopper/cryptohopper-swift-sdk) | 0.1.0-alpha.1 |
-| CLI | `@cryptohopper/cli` + binaries | [npm](https://www.npmjs.com/package/@cryptohopper/cli) + [Releases](https://github.com/cryptohopper/cryptohopper-cli/releases) | [`cryptohopper-cli`](https://github.com/cryptohopper/cryptohopper-cli) | 0.5.1-alpha.1 |
+| CLI | `@cryptohopper/cli` + binaries | [npm](https://www.npmjs.com/package/@cryptohopper/cli) + [Releases](https://github.com/cryptohopper/cryptohopper-cli/releases) | [`cryptohopper-cli`](https://github.com/cryptohopper/cryptohopper-cli) | 0.6.0-alpha.1 |
 
 All SDKs currently cover the **same 18 public API domains**: `ai`, `app`, `arbitrage`, `backtest`, `chart`, `exchange`, `hoppers`, `market`, `marketmaker`, `platform`, `signals`, `social`, `strategy`, `subscription`, `template`, `tournaments`, `user`, `webhooks`. The CLI surfaces a pragmatic subset of these as subcommands; anything not yet wired into the CLI is still reachable through the Node SDK which the CLI consumes internally.
 
