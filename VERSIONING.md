@@ -1,6 +1,6 @@
 # Versioning policy — Cryptohopper official SDKs and CLI
 
-This document is the single source of truth for how the official Cryptohopper developer packages — the Node.js, Python, Go, Ruby, Rust, PHP, Dart SDKs, and the `cryptohopper` CLI — are versioned, released, and deprecated. Each repo's `README.md` links here.
+This document is the single source of truth for how the official Cryptohopper developer packages — the Node.js, Python, Go, Ruby, Rust, PHP, Dart, Swift SDKs, and the `cryptohopper` CLI — are versioned, released, and deprecated. Each repo's `README.md` links here.
 
 ## Repositories covered
 
@@ -13,9 +13,10 @@ This document is the single source of truth for how the official Cryptohopper de
 | `cryptohopper` (Rust) | crates.io | [`cryptohopper-rust-sdk`](https://github.com/cryptohopper/cryptohopper-rust-sdk) | `rs-v*` |
 | `cryptohopper/sdk` (PHP) | Packagist | [`cryptohopper-php-sdk`](https://github.com/cryptohopper/cryptohopper-php-sdk) | `v*` |
 | `cryptohopper` (Dart) | pub.dev | [`cryptohopper-dart-sdk`](https://github.com/cryptohopper/cryptohopper-dart-sdk) | `v*` |
+| `Cryptohopper` (Swift) | Swift Package Manager (git tag) | [`cryptohopper-swift-sdk`](https://github.com/cryptohopper/cryptohopper-swift-sdk) | `v*` |
 | `@cryptohopper/cli` (CLI) | npm + GitHub Releases | [`cryptohopper-cli`](https://github.com/cryptohopper/cryptohopper-cli) | `cli-v*` |
 
-Go, PHP, and Dart use bare `v*` tags. Go's module proxy reads the tag directly as the module version; Packagist reads tags directly as SemVer; pub.dev does the same — all three reject prefixed tag names. Every other repo uses a prefixed tag so multiple languages or tools can coexist in the same org-wide release stream.
+Go, PHP, Dart, and Swift use bare `v*` tags. Go's module proxy reads the tag directly as the module version; Packagist reads tags directly as SemVer; pub.dev does the same; Swift Package Manager resolves dependency versions from the git tag. All four reject prefixed tag names. Every other repo uses a prefixed tag so multiple languages or tools can coexist in the same org-wide release stream.
 
 ## Semantic versioning
 
