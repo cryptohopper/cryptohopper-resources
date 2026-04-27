@@ -78,12 +78,14 @@ cryptohopper positions <hopper-id>       # Open positions, table form
 cryptohopper orders <hopper-id>          # Recent orders, table form
 ```
 
-### Market data (public, no auth)
+### Market data
 ```bash
 cryptohopper ticker <exchange> <market>     # e.g. cryptohopper ticker binance BTC/USDT
 cryptohopper exchange list                   # All supported exchanges (alias: ls)
 cryptohopper exchange markets <exchange>     # Trading pairs on an exchange
 ```
+
+These return market data ("public") in the sense that the *data* isn't tied to your account, but the API itself still requires authentication on every call — the gateway has no anonymous routes today. Run `cryptohopper login` (or set `CRYPTOHOPPER_TOKEN` in CI) before any of these.
 
 ### Strategies
 ```bash
