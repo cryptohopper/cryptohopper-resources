@@ -1,6 +1,6 @@
 # Cryptohopper official SDKs and CLI
 
-Cryptohopper ships official clients for eight languages and a standalone CLI. Every one hits the same Public API v1 at `https://api.cryptohopper.com/v1`, uses the same OAuth2 bearer-token auth, and speaks the shared error taxonomy documented below.
+Cryptohopper ships official clients for nine languages and a standalone CLI. Every one hits the same Public API v1 at `https://api.cryptohopper.com/v1`, uses the same OAuth2 bearer-token auth (sent in the `access-token` HTTP header), and speaks the shared error taxonomy documented below.
 
 ## At a glance
 
@@ -14,6 +14,7 @@ Cryptohopper ships official clients for eight languages and a standalone CLI. Ev
 | PHP | `cryptohopper/sdk` | [Packagist](https://packagist.org/packages/cryptohopper/sdk) | [`cryptohopper-php-sdk`](https://github.com/cryptohopper/cryptohopper-php-sdk) | 0.1.0-alpha.1 |
 | Dart / Flutter | `cryptohopper` | [pub.dev](https://pub.dev/packages/cryptohopper) | [`cryptohopper-dart-sdk`](https://github.com/cryptohopper/cryptohopper-dart-sdk) | 0.1.0-alpha.1 |
 | Swift | `Cryptohopper` (SwiftPM) | git tag | [`cryptohopper-swift-sdk`](https://github.com/cryptohopper/cryptohopper-swift-sdk) | 0.1.0-alpha.1 |
+| Kotlin / JVM | `com.cryptohopper:cryptohopper` | Maven Central (pending) | [`cryptohopper-kotlin-sdk`](https://github.com/cryptohopper/cryptohopper-kotlin-sdk) | 0.1.0-alpha.1 |
 | CLI | `@cryptohopper/cli` + binaries | [npm](https://www.npmjs.com/package/@cryptohopper/cli) + [Releases](https://github.com/cryptohopper/cryptohopper-cli/releases) | [`cryptohopper-cli`](https://github.com/cryptohopper/cryptohopper-cli) | 0.6.0-alpha.1 |
 
 All SDKs currently cover the **same 18 public API domains**: `ai`, `app`, `arbitrage`, `backtest`, `chart`, `exchange`, `hoppers`, `market`, `marketmaker`, `platform`, `signals`, `social`, `strategy`, `subscription`, `template`, `tournaments`, `user`, `webhooks`. The CLI surfaces a pragmatic subset of these as subcommands; anything not yet wired into the CLI is still reachable through the Node SDK which the CLI consumes internally.
@@ -38,6 +39,16 @@ cargo add cryptohopper
 
 # PHP
 composer require cryptohopper/sdk:^0.1.0-alpha.1
+
+# Dart / Flutter
+dart pub add cryptohopper
+
+# Swift (SwiftPM in Package.swift)
+# .package(url: "https://github.com/cryptohopper/cryptohopper-swift-sdk", from: "0.1.0-alpha.1")
+
+# Kotlin / JVM (Gradle KTS, until Maven Central publishing lands)
+#   ./gradlew publishToMavenLocal in cryptohopper-kotlin-sdk first, then:
+# implementation("com.cryptohopper:cryptohopper:0.1.0-alpha.1")
 
 # CLI (via npm)
 npm install -g @cryptohopper/cli
