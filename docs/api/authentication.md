@@ -76,11 +76,13 @@ grant_type=authorization_code
 
 ## Access Tokens
 
-The access token is used to authenticate API requests. Include it in the `Authorization` header:
+The access token is used to authenticate API requests. Include it in the `access-token` header on every request:
 
 ```
-Authorization: Bearer YOUR_ACCESS_TOKEN
+access-token: YOUR_ACCESS_TOKEN
 ```
+
+Note: the v1 Public API uses the `access-token` header, not the OAuth2-conventional `Authorization: Bearer <token>`. The AWS API Gateway in front of the production API rejects `Authorization` headers that aren't AWS-SigV4-formatted. (The internal V2 API uses Bearer; the v1 surface — which all official SDKs target — does not.)
 
 ### Token Expiration
 Access tokens expire after a set period (indicated by `expires_in` in seconds). Once expired, API requests will return a `401 Unauthorized` response. Use the refresh token to obtain a new access token.
