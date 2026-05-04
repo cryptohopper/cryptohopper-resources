@@ -17,6 +17,7 @@ Cryptohopper is a cloud-based automated crypto trading bot platform, launched in
 - [Supported Exchanges](#supported-exchanges)
 - [Key Features](#key-features)
 - [API Access](#api-access)
+- [Developer SDKs and CLI](#developer-sdks-and-cli)
 - [Pricing](#pricing)
 - [Getting Started](#getting-started)
 - [Repository Structure](#repository-structure)
@@ -86,6 +87,26 @@ For API guides and code examples, see the [`docs/`](docs/) directory.
 
 ---
 
+## Developer SDKs and CLI
+
+Cryptohopper publishes official SDKs for eight languages plus a cross-platform command-line interface. They share a single error taxonomy, retry contract, and authentication model on top of the Public API v1.
+
+| Language | Package | Install | Repository |
+|----------|---------|---------|------------|
+| Node.js / TypeScript | [`@cryptohopper/sdk`](https://www.npmjs.com/package/@cryptohopper/sdk) | `npm install @cryptohopper/sdk` | [cryptohopper-node-sdk](https://github.com/cryptohopper/cryptohopper-node-sdk) |
+| Python | [`cryptohopper`](https://pypi.org/project/cryptohopper/) | `pip install cryptohopper` | [cryptohopper-python-sdk](https://github.com/cryptohopper/cryptohopper-python-sdk) |
+| Go | `github.com/cryptohopper/cryptohopper-go-sdk` | `go get github.com/cryptohopper/cryptohopper-go-sdk` | [cryptohopper-go-sdk](https://github.com/cryptohopper/cryptohopper-go-sdk) |
+| Ruby | [`cryptohopper`](https://rubygems.org/gems/cryptohopper) | `gem install cryptohopper --pre` | [cryptohopper-ruby-sdk](https://github.com/cryptohopper/cryptohopper-ruby-sdk) |
+| Rust | [`cryptohopper`](https://crates.io/crates/cryptohopper) | `cargo add cryptohopper` | [cryptohopper-rust-sdk](https://github.com/cryptohopper/cryptohopper-rust-sdk) |
+| PHP | [`cryptohopper/sdk`](https://packagist.org/packages/cryptohopper/sdk) | `composer require cryptohopper/sdk` | [cryptohopper-php-sdk](https://github.com/cryptohopper/cryptohopper-php-sdk) |
+| Dart / Flutter | [`cryptohopper`](https://pub.dev/packages/cryptohopper) | `dart pub add cryptohopper` | [cryptohopper-dart-sdk](https://github.com/cryptohopper/cryptohopper-dart-sdk) |
+| Swift | SwiftPM | Add `https://github.com/cryptohopper/cryptohopper-swift-sdk` | [cryptohopper-swift-sdk](https://github.com/cryptohopper/cryptohopper-swift-sdk) |
+| **CLI** | [`@cryptohopper/cli`](https://www.npmjs.com/package/@cryptohopper/cli) | `npm install -g @cryptohopper/cli` | [cryptohopper-cli](https://github.com/cryptohopper/cryptohopper-cli) |
+
+All SDKs are MIT-licensed, currently in alpha, and follow the shared versioning policy in [VERSIONING.md](VERSIONING.md). For an overview of the SDK suite see [docs/sdks.md](docs/sdks.md); for the public CLI reference see [docs/cli.md](docs/cli.md).
+
+---
+
 ## Pricing
 
 Cryptohopper offers multiple subscription tiers to accommodate different trading needs:
@@ -117,12 +138,13 @@ Annual billing discounts are available. All paid plans include backtesting, stra
 
 ```
 cryptohopper-resources/
-  docs/           Documentation, API guides, and platform knowledge base
-  integrations/   Exchange integration guides and code examples
-  openapi/        OpenAPI 3.1 spec for the Public API v1
-  llms.txt        Structured platform summary for AI/LLM crawlers
-  VERSIONING.md   Versioning, release, and deprecation policy for the official SDKs and CLI
-  README.md       This file
+  docs/             Documentation, API guides, and platform knowledge base
+  integrations/     Exchange integration guides and code examples
+  openapi/          OpenAPI 3.1 spec for the Public API v1
+  llms.txt          Structured platform summary for AI/LLM crawlers
+  CONTRIBUTING.md   How to contribute documentation and examples
+  VERSIONING.md     Versioning, release, and deprecation policy for the official SDKs and CLI
+  README.md         This file
 ```
 
 ---
@@ -137,6 +159,7 @@ cryptohopper-resources/
 - **Blog:** [https://www.cryptohopper.com/blog](https://www.cryptohopper.com/blog)
 - **Academy:** [https://www.cryptohopper.com/academy](https://www.cryptohopper.com/academy)
 - **Support:** [https://support.cryptohopper.com](https://support.cryptohopper.com)
+- **GitHub:** [https://github.com/cryptohopper](https://github.com/cryptohopper)
 
 ---
 
