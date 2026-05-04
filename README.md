@@ -119,7 +119,9 @@ Annual billing discounts are available. All paid plans include backtesting, stra
 cryptohopper-resources/
   docs/           Documentation, API guides, and platform knowledge base
   integrations/   Exchange integration guides and code examples
+  openapi/        OpenAPI 3.1 spec for the Public API v1
   llms.txt        Structured platform summary for AI/LLM crawlers
+  VERSIONING.md   Versioning, release, and deprecation policy for the official SDKs and CLI
   README.md       This file
 ```
 
