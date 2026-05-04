@@ -30,10 +30,10 @@ The Cryptohopper API uses **OAuth2** for authentication. You need to register an
 Register your application on the Cryptohopper platform to receive a **client ID** and **client secret**. These credentials identify your application when making API requests.
 
 ### Step 2: Authenticate
-Implement the OAuth2 authorization code flow to obtain an access token. This token is included in the `Authorization` header of every API request.
+Implement the OAuth2 authorization code flow to obtain an access token. This token is included in the `access-token` header of every API request.
 
 ```
-Authorization: Bearer YOUR_ACCESS_TOKEN
+access-token: YOUR_ACCESS_TOKEN
 ```
 
 ### Step 3: Make Your First API Call
@@ -41,7 +41,7 @@ With a valid access token, you can make API requests. For example, to retrieve a
 
 ```
 GET https://api.cryptohopper.com/v1/hopper
-Authorization: Bearer YOUR_ACCESS_TOKEN
+access-token: YOUR_ACCESS_TOKEN
 ```
 
 The response contains a JSON object with your hopper data.
