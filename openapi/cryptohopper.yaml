@@ -1,0 +1,1203 @@
+openapi: 3.1.0
+info:
+  title: Cryptohopper API
+  version: 1.0.0
+  description: |
+    Official OpenAPI 3.1 reference for the public Cryptohopper API.
+
+    This spec is the contract document behind the official SDKs:
+
+    - [`@cryptohopper/sdk`](https://www.npmjs.com/package/@cryptohopper/sdk) (Node.js)
+    - [`cryptohopper`](https://pypi.org/project/cryptohopper/) (Python)
+    - [`cryptohopper-go-sdk`](https://pkg.go.dev/github.com/cryptohopper/cryptohopper-go-sdk) (Go)
+    - [`cryptohopper`](https://rubygems.org/gems/cryptohopper) (Ruby)
+    - [`cryptohopper`](https://crates.io/crates/cryptohopper) (Rust)
+
+    It covers the **18 public API domains** exposed on the v1 Public API. If
+    you're building your own client in a language we don't ship an SDK for,
+    start here.
+
+    Not included:
+      * The Joomla-session-based internal SiteAPI (`/siteapi.php`).
+      * The mobile device-id authorisation flow (internal).
+      * The HMAC request-signing variant (reserved for high-volume partners;
+        not required for the bearer flow most integrations use).
+      * Signal webhook publishing (`/signal.php`) — distinct auth model.
+  contact:
+    name: Cryptohopper
+    email: info@cryptohopper.com
+    url: https://www.cryptohopper.com
+  license:
+    name: MIT (this spec)
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://www.cryptohopper.com/terms-of-service
+
+servers:
+  - url: https://api.cryptohopper.com/v1
+    description: Production
+  - url: https://api-staging.cryptohopper.com/v1
+    description: Staging (internal)
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: user
+    description: Authenticated user profile.
+  - name: hoppers
+    description: User trading bots — CRUD, positions, orders, trade actions, config.
+  - name: exchange
+    description: Public market data — ticker, candles, orderbook, markets, currencies.
+  - name: strategy
+    description: User-defined trading strategies.
+  - name: backtest
+    description: Run and inspect backtests.
+  - name: market
+    description: Marketplace browse — signals, items, homepage (public).
+  - name: signals
+    description: Signal-provider analytics (distinct from marketplace browse).
+  - name: arbitrage
+    description: Exchange + intra-exchange arbitrage + shared backlog.
+  - name: marketmaker
+    description: Market-maker bot ops, market-trend overrides, backlog.
+  - name: template
+    description: Reusable bot templates.
+  - name: ai
+    description: AI credits + LLM analysis flow.
+  - name: platform
+    description: Marketing / i18n / discovery reads (public).
+  - name: chart
+    description: Saved chart layouts + shared chart links.
+  - name: subscription
+    description: Plans, per-hopper state, credits, billing.
+  - name: social
+    description: Profiles, feed, posts, conversations, social graph.
+  - name: tournaments
+    description: Trading competitions — list, join, leaderboards.
+  - name: webhooks
+    description: Developer webhook registration.
+  - name: app
+    description: Mobile app store receipts + in-app purchases.
+
+paths:
+  # ─── User ───────────────────────────────────────────────────────────────
+  /user/get:
+    get:
+      tags: [user]
+      summary: Fetch the authenticated user's profile
+      description: Requires `user` scope.
+      security:
+        - BearerAuth: [user]
+      responses:
+        "200":
+          $ref: "#/components/responses/UserEnvelope"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  # ─── Hoppers ────────────────────────────────────────────────────────────
+  /hopper/list:
+    get:
+      tags: [hoppers]
+      summary: List the user's hoppers
+      parameters:
+        - name: exchange
+          in: query
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/HopperListEnvelope" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /hopper/get:
+    get:
+      tags: [hoppers]
+      summary: Fetch a single hopper
+      parameters:
+        - { name: hopper_id, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/HopperEnvelope" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /hopper/create:
+    post:
+      tags: [hoppers]
+      summary: Create a new hopper
+      description: Requires `manage` scope.
+      requestBody:
+        content: { application/json: { schema: { type: object, additionalProperties: true } } }
+      responses:
+        "200": { $ref: "#/components/responses/HopperEnvelope" }
+
+  /hopper/update:
+    post:
+      tags: [hoppers]
+      summary: Update a hopper
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [hopper_id]
+              properties:
+                hopper_id: { type: string }
+              additionalProperties: true
+      responses:
+        "200": { $ref: "#/components/responses/HopperEnvelope" }
+
+  /hopper/delete:
+    post:
+      tags: [hoppers]
+      summary: Delete a hopper
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [hopper_id]
+              properties: { hopper_id: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/SuccessEnvelope" }
+
+  /hopper/positions:
+    get:
+      tags: [hoppers]
+      summary: List open positions for a hopper
+      parameters:
+        - { name: hopper_id, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/PositionListEnvelope" }
+
+  /hopper/position:
+    get:
+      tags: [hoppers]
+      summary: Fetch a single position
+      parameters:
+        - { name: hopper_id, in: query, required: true, schema: { type: string } }
+        - { name: position_id, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/PositionEnvelope" }
+
+  /hopper/orders:
+    get:
+      tags: [hoppers]
+      summary: Recent orders for a hopper
+      parameters:
+        - { name: hopper_id, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/OrderListEnvelope" }
+
+  /hopper/buy:
+    post:
+      tags: [hoppers]
+      summary: Place a buy
+      description: Requires `trade` scope. Subject to the `order` rate bucket (8 per 8s).
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BuySellInput" }
+      responses:
+        "200": { $ref: "#/components/responses/SuccessEnvelope" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /hopper/sell:
+    post:
+      tags: [hoppers]
+      summary: Place a sell
+      description: Requires `trade` scope. Subject to the `order` rate bucket.
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BuySellInput" }
+      responses:
+        "200": { $ref: "#/components/responses/SuccessEnvelope" }
+
+  /hopper/configget:
+    get:
+      tags: [hoppers]
+      summary: Fetch a hopper's full config
+      parameters:
+        - { name: hopper_id, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/HopperConfigEnvelope" }
+
+  /hopper/configupdate:
+    post:
+      tags: [hoppers]
+      summary: Update a hopper's config
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [hopper_id]
+              properties: { hopper_id: { type: string } }
+              additionalProperties: true
+      responses:
+        "200": { $ref: "#/components/responses/HopperConfigEnvelope" }
+
+  /hopper/configpools:
+    get:
+      tags: [hoppers]
+      summary: List config pools for a hopper
+      parameters:
+        - { name: hopper_id, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/ConfigPoolListEnvelope" }
+
+  /hopper/panic:
+    post:
+      tags: [hoppers]
+      summary: Panic-sell every position on a hopper
+      description: Requires `trade` scope. Irreversible.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [hopper_id]
+              properties: { hopper_id: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/SuccessEnvelope" }
+
+  # ─── Exchange (public) ──────────────────────────────────────────────────
+  /exchange/ticker:
+    get:
+      tags: [exchange]
+      summary: Current ticker for a market
+      security: []
+      parameters:
+        - { name: exchange, in: query, required: true, schema: { type: string } }
+        - { name: market, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/TickerEnvelope" }
+
+  /exchange/candle:
+    get:
+      tags: [exchange]
+      summary: OHLCV candles
+      security: []
+      parameters:
+        - { name: exchange, in: query, required: true, schema: { type: string } }
+        - { name: market, in: query, required: true, schema: { type: string } }
+        - { name: timeframe, in: query, required: true, schema: { type: string, example: "1h" } }
+        - { name: from, in: query, schema: { type: integer, format: int64 } }
+        - { name: to, in: query, schema: { type: integer, format: int64 } }
+      responses:
+        "200": { $ref: "#/components/responses/CandleListEnvelope" }
+
+  /exchange/orderbook:
+    get:
+      tags: [exchange]
+      summary: Orderbook depth for a market
+      security: []
+      parameters:
+        - { name: exchange, in: query, required: true, schema: { type: string } }
+        - { name: market, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/OrderbookEnvelope" }
+
+  /exchange/markets:
+    get:
+      tags: [exchange]
+      summary: List markets on an exchange
+      security: []
+      parameters:
+        - { name: exchange, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/ListEnvelope" }
+
+  /exchange/currencies:
+    get:
+      tags: [exchange]
+      summary: List currencies on an exchange
+      security: []
+      parameters:
+        - { name: exchange, in: query, required: true, schema: { type: string } }
+      responses:
+        "200": { $ref: "#/components/responses/ListEnvelope" }
+
+  /exchange/exchanges:
+    get:
+      tags: [exchange]
+      summary: List all supported exchanges
+      security: []
+      responses:
+        "200": { $ref: "#/components/responses/ListEnvelope" }
+
+  /exchange/forex-rates:
+    get:
+      tags: [exchange]
+      summary: Fiat forex conversion rates
+      security: []
+      responses:
+        "200": { $ref: "#/components/responses/ObjectEnvelope" }
+
+  # ─── Strategy ───────────────────────────────────────────────────────────
+  /strategy/strategies:
+    get: { tags: [strategy], summary: List user strategies, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /strategy/get:
+    get:
+      tags: [strategy]
+      summary: Fetch a strategy
+      parameters:
+        - { name: strategy_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /strategy/create:
+    post:
+      tags: [strategy]
+      summary: Create a strategy
+      requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /strategy/edit:
+    post:
+      tags: [strategy]
+      summary: Update a strategy
+      description: Server path is `/strategy/edit` (not `/strategy/update`).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [strategy_id]
+              properties: { strategy_id: { type: string } }
+              additionalProperties: true
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /strategy/delete:
+    post:
+      tags: [strategy]
+      summary: Delete a strategy
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [strategy_id], properties: { strategy_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+
+  # ─── Backtest ───────────────────────────────────────────────────────────
+  /backtest/new:
+    post:
+      tags: [backtest]
+      summary: Start a new backtest
+      description: Rate bucket `backtest` (1 per 2 seconds).
+      requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+      responses:
+        "200": { $ref: "#/components/responses/ObjectEnvelope" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+  /backtest/get:
+    get:
+      tags: [backtest]
+      summary: Fetch a backtest
+      parameters:
+        - { name: backtest_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /backtest/list:
+    get: { tags: [backtest], summary: List backtests, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /backtest/cancel:
+    post:
+      tags: [backtest]
+      summary: Cancel a backtest
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [backtest_id], properties: { backtest_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /backtest/restart:
+    post:
+      tags: [backtest]
+      summary: Restart a backtest
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [backtest_id], properties: { backtest_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /backtest/limits:
+    get: { tags: [backtest], summary: Backtest quota, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+
+  # ─── Market (public) ────────────────────────────────────────────────────
+  /market/signals:
+    get: { tags: [market], summary: Browse marketplace signals, security: [], responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /market/signal:
+    get:
+      tags: [market]
+      summary: Fetch a marketplace signal
+      security: []
+      parameters:
+        - { name: signal_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /market/marketitems:
+    get: { tags: [market], summary: Browse marketplace items, security: [], responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /market/marketitem:
+    get:
+      tags: [market]
+      summary: Fetch a marketplace item
+      security: []
+      parameters:
+        - { name: item_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /market/homepage:
+    get: { tags: [market], summary: Marketplace homepage payload, security: [], responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+
+  # ─── Signals (provider analytics) ───────────────────────────────────────
+  /signals/signals:
+    get: { tags: [signals], summary: Published signals, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /signals/performance:
+    get: { tags: [signals], summary: Winrate / avg profit stats, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /signals/stats:
+    get: { tags: [signals], summary: Provider stats (subscribers, total PnL), responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /signals/distribution:
+    get: { tags: [signals], summary: Signal distribution across exchanges/markets, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /signals/chartdata:
+    get: { tags: [signals], summary: Chart data series for provider performance, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+
+  # ─── Arbitrage ──────────────────────────────────────────────────────────
+  /arbitrage/exchange:
+    post: { tags: [arbitrage], summary: Start a cross-exchange arbitrage run, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /arbitrage/cancel:
+    post: { tags: [arbitrage], summary: Cancel a cross-exchange run, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } } }
+  /arbitrage/results:
+    get: { tags: [arbitrage], summary: Exchange-arbitrage results, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /arbitrage/history:
+    get: { tags: [arbitrage], summary: Exchange-arbitrage history, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /arbitrage/total:
+    get: { tags: [arbitrage], summary: Running totals, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /arbitrage/resettotal:
+    post: { tags: [arbitrage], summary: Reset totals, responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } } }
+  /arbitrage/market:
+    post: { tags: [arbitrage], summary: Start an intra-exchange arbitrage run, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /arbitrage/market-cancel:
+    post: { tags: [arbitrage], summary: Cancel a market-arbitrage run, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } } }
+  /arbitrage/market-result:
+    get: { tags: [arbitrage], summary: Result of a specific market-arb, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /arbitrage/market-history:
+    get: { tags: [arbitrage], summary: Historical market-arb runs, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /arbitrage/get-backlogs:
+    get: { tags: [arbitrage], summary: Queued arbitrage backlog items, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /arbitrage/get-backlog:
+    get:
+      tags: [arbitrage]
+      summary: Fetch a single backlog item
+      parameters:
+        - { name: backlog_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /arbitrage/delete-backlog:
+    post:
+      tags: [arbitrage]
+      summary: Delete a backlog item
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [backlog_id], properties: { backlog_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+
+  # ─── MarketMaker ────────────────────────────────────────────────────────
+  /marketmaker/get:
+    get: { tags: [marketmaker], summary: Market-maker state for a hopper, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /marketmaker/cancel:
+    post: { tags: [marketmaker], summary: Cancel running market-maker orders, responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } } }
+  /marketmaker/history:
+    get: { tags: [marketmaker], summary: Market-maker order history, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /marketmaker/get-market-trend:
+    get: { tags: [marketmaker], summary: Get market-trend override, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /marketmaker/set-market-trend:
+    post: { tags: [marketmaker], summary: Set market-trend override, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /marketmaker/delete-market-trend:
+    post: { tags: [marketmaker], summary: Delete market-trend override, responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } } }
+  /marketmaker/get-backlogs:
+    get: { tags: [marketmaker], summary: Market-maker backlog items, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /marketmaker/get-backlog:
+    get:
+      tags: [marketmaker]
+      summary: Fetch a backlog item
+      parameters:
+        - { name: backlog_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /marketmaker/delete-backlog:
+    post:
+      tags: [marketmaker]
+      summary: Delete a backlog item
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [backlog_id], properties: { backlog_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+
+  # ─── Template ───────────────────────────────────────────────────────────
+  /template/templates:
+    get: { tags: [template], summary: List templates, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /template/get:
+    get:
+      tags: [template]
+      summary: Fetch a template
+      parameters:
+        - { name: template_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /template/basic:
+    get:
+      tags: [template]
+      summary: Fetch a template (basic/lightweight view)
+      parameters:
+        - { name: template_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /template/save-template:
+    post: { tags: [template], summary: Save a new template, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /template/update:
+    post:
+      tags: [template]
+      summary: Update an existing template
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [template_id], properties: { template_id: { type: string } }, additionalProperties: true }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /template/load:
+    post:
+      tags: [template]
+      summary: Apply a template to a hopper
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [template_id, hopper_id]
+              properties:
+                template_id: { type: string }
+                hopper_id: { type: string }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /template/delete:
+    post:
+      tags: [template]
+      summary: Delete a template
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [template_id], properties: { template_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+
+  # ─── AI ─────────────────────────────────────────────────────────────────
+  /ai/list:
+    get: { tags: [ai], summary: List AI items / sessions, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /ai/get:
+    get:
+      tags: [ai]
+      summary: Fetch a single AI item
+      parameters:
+        - { name: id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /ai/availablemodels:
+    get: { tags: [ai], summary: Available LLM models, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /ai/getaicredits:
+    get: { tags: [ai], summary: AI credit balance, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /ai/aicreditinvoices:
+    get: { tags: [ai], summary: AI credit purchase invoices, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /ai/aicredittransactions:
+    get: { tags: [ai], summary: AI credit transaction history, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+  /ai/buyaicredits:
+    post: { tags: [ai], summary: Start a credit purchase, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /ai/aillmanalyzeoptions:
+    get: { tags: [ai], summary: Options for the LLM analyse endpoint, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /ai/doaillmanalyze:
+    post: { tags: [ai], summary: Run an LLM analysis (async), requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /ai/aillmanalyzeresults:
+    get: { tags: [ai], summary: Result(s) of an LLM analysis, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } }
+  /ai/aillmresults:
+    get: { tags: [ai], summary: Historical LLM analysis results, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } }
+
+  # ─── Platform (all public) ──────────────────────────────────────────────
+  /platform/latestblog: { get: { tags: [platform], summary: Latest blog posts, security: [], responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /platform/documentation: { get: { tags: [platform], summary: Documentation articles, security: [], responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /platform/promobar: { get: { tags: [platform], summary: Active promo bar, security: [], responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /platform/searchdocumentation:
+    get:
+      tags: [platform]
+      summary: Full-text docs search
+      security: []
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /platform/countries: { get: { tags: [platform], summary: Country list, security: [], responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /platform/countryallowlist: { get: { tags: [platform], summary: Allowed countries, security: [], responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /platform/ipcountry: { get: { tags: [platform], summary: IP-resolved country, security: [], responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /platform/languages: { get: { tags: [platform], summary: Supported UI languages, security: [], responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /platform/bottypes: { get: { tags: [platform], summary: Bot-type enumeration, security: [], responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+
+  # ─── Chart ──────────────────────────────────────────────────────────────
+  /chart/list: { get: { tags: [chart], summary: List saved charts, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /chart/get:
+    get:
+      tags: [chart]
+      summary: Fetch a saved chart
+      parameters:
+        - { name: chart_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /chart/save: { post: { tags: [chart], summary: Save a chart layout, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /chart/delete:
+    post:
+      tags: [chart]
+      summary: Delete a chart
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [chart_id], properties: { chart_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /chart/share-save: { post: { tags: [chart], summary: Save a shared chart, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /chart/share-get:
+    get:
+      tags: [chart]
+      summary: Fetch a shared chart by id
+      security: []
+      parameters:
+        - { name: share_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+
+  # ─── Subscription ───────────────────────────────────────────────────────
+  /subscription/hopper:
+    get:
+      tags: [subscription]
+      summary: Subscription state for a hopper
+      parameters:
+        - { name: hopper_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /subscription/get: { get: { tags: [subscription], summary: Account subscription state, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /subscription/plans: { get: { tags: [subscription], summary: Available plans, security: [], responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /subscription/remap: { post: { tags: [subscription], summary: Remap a subscription slot, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /subscription/assign: { post: { tags: [subscription], summary: Assign a subscription slot, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /subscription/getcredits: { get: { tags: [subscription], summary: Platform credit balance, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /subscription/ordersub: { post: { tags: [subscription], summary: Start a subscription purchase, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /subscription/stopsubscription: { post: { tags: [subscription], summary: Cancel an active subscription, responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } } } }
+
+  # ─── Social ─────────────────────────────────────────────────────────────
+  /social/getprofile:
+    get:
+      tags: [social]
+      summary: Fetch a public profile by alias
+      parameters:
+        - { name: alias, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /social/editprofile: { post: { tags: [social], summary: Update own profile, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /social/checkalias:
+    get:
+      tags: [social]
+      summary: Check alias availability
+      parameters:
+        - { name: alias, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /social/getfeed: { get: { tags: [social], summary: Personalised feed, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /social/gettrends: { get: { tags: [social], summary: Trending topics, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /social/whotofollow: { get: { tags: [social], summary: Suggested profiles, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /social/search:
+    get:
+      tags: [social]
+      summary: Search posts/users
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /social/getnotifications: { get: { tags: [social], summary: User notifications, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /social/getconversationlist: { get: { tags: [social], summary: DM conversation list, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /social/loadconversation:
+    get:
+      tags: [social]
+      summary: Load a conversation's messages
+      parameters:
+        - { name: conversation_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /social/sendmessage: { post: { tags: [social], summary: Send a DM, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /social/deletemessage:
+    post:
+      tags: [social]
+      summary: Delete a DM
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [message_id], properties: { message_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /social/post: { post: { tags: [social], summary: Create a post, requestBody: { content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } } } }
+  /social/getpost:
+    get:
+      tags: [social]
+      summary: Fetch a post
+      parameters:
+        - { name: post_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /social/deletepost:
+    post:
+      tags: [social]
+      summary: Delete a post
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [post_id], properties: { post_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /social/pinpost:
+    post:
+      tags: [social]
+      summary: Pin/unpin a post
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [post_id], properties: { post_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /social/getcomment:
+    get:
+      tags: [social]
+      summary: Fetch a comment
+      parameters:
+        - { name: comment_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /social/getcomments:
+    get:
+      tags: [social]
+      summary: List comments on a post
+      parameters:
+        - { name: post_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /social/deletecomment:
+    post:
+      tags: [social]
+      summary: Delete a comment
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [comment_id], properties: { comment_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /social/getmedia:
+    get:
+      tags: [social]
+      summary: Fetch media attachment
+      parameters:
+        - { name: media_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /social/follow:
+    post:
+      tags: [social]
+      summary: Follow/unfollow
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [alias], properties: { alias: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /social/followers:
+    get:
+      tags: [social]
+      summary: List followers of a profile
+      parameters:
+        - { name: alias, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /social/following:
+    get:
+      tags: [social]
+      summary: Is the user following this profile?
+      parameters:
+        - { name: alias, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /social/followingprofiles:
+    get:
+      tags: [social]
+      summary: List profiles a user follows
+      parameters:
+        - { name: alias, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /social/like:
+    post:
+      tags: [social]
+      summary: Like/unlike a post
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [post_id], properties: { post_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /social/repost:
+    post:
+      tags: [social]
+      summary: Repost a post
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [post_id], properties: { post_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /social/blockuser:
+    post:
+      tags: [social]
+      summary: Block a user
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [alias], properties: { alias: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+
+  # ─── Tournaments ────────────────────────────────────────────────────────
+  /tournaments/gettournaments: { get: { tags: [tournaments], summary: List tournaments, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /tournaments/active: { get: { tags: [tournaments], summary: Active tournaments, security: [], responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /tournaments/gettournament:
+    get:
+      tags: [tournaments]
+      summary: Fetch a tournament
+      parameters:
+        - { name: tournament_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /tournaments/search:
+    get:
+      tags: [tournaments]
+      summary: Search tournaments
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /tournaments/trades:
+    get:
+      tags: [tournaments]
+      summary: Trades in a tournament
+      parameters:
+        - { name: tournament_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /tournaments/stats:
+    get:
+      tags: [tournaments]
+      summary: Aggregated tournament stats
+      parameters:
+        - { name: tournament_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /tournaments/activity:
+    get:
+      tags: [tournaments]
+      summary: Tournament activity feed
+      parameters:
+        - { name: tournament_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /tournaments/leaderboard: { get: { tags: [tournaments], summary: Cross-tournament leaderboard, responses: { "200": { $ref: "#/components/responses/ListEnvelope" } } } }
+  /tournaments/leaderboard_tournament:
+    get:
+      tags: [tournaments]
+      summary: Per-tournament leaderboard
+      parameters:
+        - { name: tournament_id, in: query, required: true, schema: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ListEnvelope" } }
+  /tournaments/join:
+    post:
+      tags: [tournaments]
+      summary: Join a tournament
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [tournament_id], properties: { tournament_id: { type: string } }, additionalProperties: true }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+  /tournaments/leave:
+    post:
+      tags: [tournaments]
+      summary: Leave a tournament
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [tournament_id], properties: { tournament_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+
+  # ─── Webhooks (developer API) ───────────────────────────────────────────
+  /api/webhook_create:
+    post:
+      tags: [webhooks]
+      summary: Register a webhook
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /api/webhook_delete:
+    post:
+      tags: [webhooks]
+      summary: Delete a webhook
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [webhook_id], properties: { webhook_id: { type: string } } }
+      responses: { "200": { $ref: "#/components/responses/SuccessEnvelope" } }
+
+  # ─── App (mobile receipts) ──────────────────────────────────────────────
+  /app/receipt:
+    post:
+      tags: [app]
+      summary: Validate an app store receipt
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+  /app/in_app_purchase:
+    post:
+      tags: [app]
+      summary: Record an in-app purchase
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses: { "200": { $ref: "#/components/responses/ObjectEnvelope" } }
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: 40-char OAuth2 access token
+      description: |
+        OAuth2 access token obtained from the developer dashboard. Sent as:
+
+            Authorization: Bearer <40-char token>
+
+        Optionally pair with an `x-api-app-key` header carrying your OAuth
+        `client_id` — the server uses it for per-app rate-limit attribution.
+    AppKey:
+      type: apiKey
+      in: header
+      name: x-api-app-key
+      description: OAuth `client_id`. Optional; attached alongside Bearer.
+
+  schemas:
+    ApiErrorBody:
+      type: object
+      description: |
+        Error envelope returned for every non-2xx response. The `code` field
+        here is a numeric server-side diagnostic (often a rate-limit bucket
+        identifier); SDKs expose it as `server_code` and derive the
+        machine-readable string code from the HTTP status.
+      required: [status, error, message]
+      properties:
+        status: { type: integer }
+        code: { type: integer, description: "Numeric server-side code (0 if unused)." }
+        error: { type: integer, enum: [1] }
+        message: { type: string }
+        ip_address: { type: string, description: "Client IP the server saw." }
+
+    BuySellInput:
+      type: object
+      required: [hopper_id, market]
+      properties:
+        hopper_id: { type: string }
+        market: { type: string, example: "BTC/USDT" }
+        amount: { oneOf: [{ type: string }, { type: number }] }
+        price: { oneOf: [{ type: string }, { type: number }] }
+      additionalProperties: true
+
+    Hopper:
+      type: object
+      properties:
+        id: { oneOf: [{ type: string }, { type: integer }] }
+        name: { type: string }
+        exchange: { type: string }
+        enabled: { oneOf: [{ type: integer }, { type: boolean }] }
+      additionalProperties: true
+
+    Position:
+      type: object
+      properties:
+        hopper_id: { oneOf: [{ type: string }, { type: integer }] }
+        coin: { type: string }
+        amount: { oneOf: [{ type: string }, { type: number }] }
+        rate: { oneOf: [{ type: string }, { type: number }] }
+      additionalProperties: true
+
+    Order:
+      type: object
+      properties:
+        id: { oneOf: [{ type: string }, { type: integer }] }
+        hopper_id: { oneOf: [{ type: string }, { type: integer }] }
+        market: { type: string }
+        type: { type: string }
+        amount: { oneOf: [{ type: string }, { type: number }] }
+        price: { oneOf: [{ type: string }, { type: number }] }
+      additionalProperties: true
+
+    Ticker:
+      type: object
+      properties:
+        market: { type: string }
+        last: { oneOf: [{ type: string }, { type: number }] }
+        bid: { oneOf: [{ type: string }, { type: number }] }
+        ask: { oneOf: [{ type: string }, { type: number }] }
+        volume: { oneOf: [{ type: string }, { type: number }] }
+      additionalProperties: true
+
+    Candle:
+      type: object
+      properties:
+        time: { type: integer, format: int64 }
+        open: { oneOf: [{ type: string }, { type: number }] }
+        high: { oneOf: [{ type: string }, { type: number }] }
+        low: { oneOf: [{ type: string }, { type: number }] }
+        close: { oneOf: [{ type: string }, { type: number }] }
+        volume: { oneOf: [{ type: string }, { type: number }] }
+      additionalProperties: true
+
+    Orderbook:
+      type: object
+      properties:
+        bids: { type: array, items: { type: array, items: { oneOf: [{ type: string }, { type: number }] } } }
+        asks: { type: array, items: { type: array, items: { oneOf: [{ type: string }, { type: number }] } } }
+      additionalProperties: true
+
+  responses:
+    ObjectEnvelope:
+      description: Success (object payload).
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data]
+            properties: { data: { type: object, additionalProperties: true } }
+
+    ListEnvelope:
+      description: Success (array payload).
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data]
+            properties:
+              data: { type: array, items: { type: object, additionalProperties: true } }
+
+    SuccessEnvelope:
+      description: Success (acknowledgement, usually empty or `{success: true}`).
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data]
+            properties:
+              data:
+                type: object
+                properties: { success: { type: boolean } }
+                additionalProperties: true
+
+    UserEnvelope:
+      description: User profile response.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                additionalProperties: true
+                properties:
+                  id: { oneOf: [{ type: string }, { type: integer }] }
+                  email: { type: string }
+                  username: { type: string }
+                  is_trial_user: { type: string }
+                  userHash: { type: string }
+
+    HopperEnvelope:
+      description: Single hopper.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: { data: { $ref: "#/components/schemas/Hopper" } }
+
+    HopperListEnvelope:
+      description: Array of hoppers.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data: { type: array, items: { $ref: "#/components/schemas/Hopper" } }
+
+    HopperConfigEnvelope:
+      description: Hopper config.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: { data: { type: object, additionalProperties: true } }
+
+    ConfigPoolListEnvelope:
+      description: Config pools.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data: { type: array, items: { type: object, additionalProperties: true } }
+
+    PositionEnvelope:
+      description: Single position.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: { data: { $ref: "#/components/schemas/Position" } }
+
+    PositionListEnvelope:
+      description: Positions array.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data: { type: array, items: { $ref: "#/components/schemas/Position" } }
+
+    OrderListEnvelope:
+      description: Orders array.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data: { type: array, items: { $ref: "#/components/schemas/Order" } }
+
+    TickerEnvelope:
+      description: Ticker.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: { data: { $ref: "#/components/schemas/Ticker" } }
+
+    CandleListEnvelope:
+      description: OHLCV candles.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data: { type: array, items: { $ref: "#/components/schemas/Candle" } }
+
+    OrderbookEnvelope:
+      description: Orderbook.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: { data: { $ref: "#/components/schemas/Orderbook" } }
+
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiErrorBody" }
+
+    Forbidden:
+      description: Missing required scope OR IP-whitelist mismatch for the OAuth app.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiErrorBody" }
+
+    NotFound:
+      description: Resource or endpoint not found.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiErrorBody" }
+
+    RateLimited:
+      description: |
+        Rate limit hit. Buckets:
+
+          * `normal` — 30 req/min (all standard endpoints)
+          * `order` — 8 per 8s window (`buy`, `sell`, `order`, `trade`)
+          * `backtest` — 1 per 2s (`backtest/*`)
+
+        Inspect the `code` field (numeric) for the exact bucket, and the
+        `Retry-After` response header for the minimum wait (delta-seconds
+        or HTTP-date). Every official SDK auto-retries this by default.
+      headers:
+        Retry-After:
+          description: Seconds to wait, or an HTTP-date.
+          schema: { type: string }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiErrorBody" }
