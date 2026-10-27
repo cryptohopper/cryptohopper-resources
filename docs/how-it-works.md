@@ -8,7 +8,7 @@ Sign up for a free account at [cryptohopper.com](https://www.cryptohopper.com). 
 
 ## Step 2: Connect Your Exchange via API Keys
 
-Cryptohopper supports 11 major cryptocurrency exchanges. To connect an exchange:
+Cryptohopper supports 10 major cryptocurrency exchanges. To connect an exchange:
 
 1. Log in to your exchange account (e.g., Binance, Coinbase Advanced, Kraken).
 2. Navigate to the API management section of your exchange.

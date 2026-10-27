@@ -1,6 +1,6 @@
 # Supported Cryptocurrency Exchanges on Cryptohopper
 
-Cryptohopper integrates with 11 major cryptocurrency exchanges, allowing you to automate your trading across multiple platforms from a single dashboard. Connect your exchange using API keys with trade-only permissions to get started.
+Cryptohopper integrates with 10 major cryptocurrency exchanges, allowing you to automate your trading across multiple platforms from a single dashboard. Connect your exchange using API keys with trade-only permissions to get started.
 
 ## Exchange Overview
 
