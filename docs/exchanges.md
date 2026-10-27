@@ -1,6 +1,6 @@
 # Supported Cryptocurrency Exchanges on Cryptohopper
 
-Cryptohopper integrates with more than 15 major cryptocurrency exchanges, allowing you to automate your trading across multiple platforms from a single dashboard. Connect your exchange using API keys with trade-only permissions to get started.
+Cryptohopper integrates with 11 major cryptocurrency exchanges, allowing you to automate your trading across multiple platforms from a single dashboard. Connect your exchange using API keys with trade-only permissions to get started.
 
 ## Exchange Overview
 
@@ -9,7 +9,6 @@ Cryptohopper integrates with more than 15 major cryptocurrency exchanges, allowi
 | **Binance** | Spot, Futures | The world's largest cryptocurrency exchange by trading volume. Offers an extensive selection of trading pairs and deep liquidity. | [binance.com](https://www.binance.com/en/register?ref=P6CD65KX) |
 | **Binance.US** | Spot | The US-regulated version of Binance, compliant with United States regulations. Separate accounts and API keys from global Binance. | [binance.us](https://www.binance.us/) |
 | **BingX** | Spot, Futures | A social trading-focused exchange offering spot, derivatives, and copy trading features. | [bingx.com](https://bingx.com/invite/AAAR94) |
-| **BitMart** | Spot, Futures | A global cryptocurrency exchange known for its wide token selection and competitive trading fees. | [bitmart.com](https://www.bitmart.com/register-referral/en?r=VuEYv4) |
 | **Bitvavo** | Spot | A European exchange based in Amsterdam, popular for its low fees and ease of use. Supports EUR trading pairs. | [bitvavo.com](https://bitvavo.com/en/affiliate/cryptohopper) |
 | **Coinbase Advanced** | Spot | The advanced trading platform from Coinbase, one of the most trusted and regulated exchanges in the United States. | [coinbase.com](https://coinbase-consumer.sjv.io/anKdgR) |
 | **Crypto.com** | Spot | A widely used platform with a large user base, offering spot trading and a broad ecosystem of crypto services. | [crypto.com](https://crypto.com/exch/4pv7m446qs) |

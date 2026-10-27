@@ -12,7 +12,7 @@ Cryptohopper offers multiple subscription tiers. There is a free plan that inclu
 
 ## Which cryptocurrency exchanges does Cryptohopper support?
 
-Cryptohopper supports 11+ major exchanges including Binance, Binance.US, BingX, BitMart, Bitvavo, Coinbase Advanced, Crypto.com, HTX, Kraken, KuCoin, and OKX. See the full [supported exchanges list](exchanges.md) for details.
+Cryptohopper supports 11 major exchanges including Binance, Binance.US, BingX, Bitvavo, Coinbase Advanced, Crypto.com, HTX, Kraken, KuCoin, and OKX. See the full [supported exchanges list](exchanges.md) for details.
 
 ## Is Cryptohopper suitable for beginners?
 

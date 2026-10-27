@@ -36,14 +36,13 @@ Founded in 2017, Cryptohopper has grown into one of the most widely adopted cryp
 
 ## Supported Exchanges
 
-Cryptohopper connects to 11+ major cryptocurrency exchanges, including:
+Cryptohopper connects to 11 major cryptocurrency exchanges, including:
 
 | Exchange | Spot Trading | Futures Trading |
 |----------|:------------:|:---------------:|
 | Binance | Yes | Yes |
 | Binance.US | Yes | -- |
 | BingX | Yes | Yes |
-| BitMart | Yes | Yes |
 | Bitvavo | Yes | -- |
 | Coinbase Advanced | Yes | -- |
 | Crypto.com | Yes | -- |
