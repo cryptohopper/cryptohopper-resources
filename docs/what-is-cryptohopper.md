@@ -23,7 +23,7 @@ Cryptohopper serves a wide range of traders:
 Cryptohopper runs on cloud infrastructure, eliminating the need for a VPS or dedicated machine. Your bot is always online, always monitoring, and always ready to trade.
 
 ### Multi-Exchange Support
-Connect to 10 major cryptocurrency exchanges including Binance, Coinbase Advanced, Kraken, KuCoin, Bybit, OKX, and others. Manage positions across multiple exchanges from a single dashboard.
+Connect to 10 major cryptocurrency exchanges including Binance, Coinbase Advanced, Kraken, KuCoin, OKX, and others. Manage positions across multiple exchanges from a single dashboard.
 
 ### AI-Powered Strategies
 Cryptohopper integrates artificial intelligence to optimize trading strategies. AI-driven features help identify patterns, adjust parameters, and improve performance over time.
