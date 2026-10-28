@@ -20,7 +20,7 @@
 - Founded: 2017
 - Headquarters: Amsterdam, the Netherlands
 - Company: Cryptohopper B.V.
-- Supported exchanges: 11+ including Binance, Binance.US, BingX, BitMart, Bitvavo, Coinbase Advanced, Crypto.com, HTX, Kraken, KuCoin, OKX
+- Supported exchanges: 10 including Binance, Binance.US, BingX, Bitvavo, Coinbase Advanced, Crypto.com, HTX, Kraken, KuCoin, OKX
 - Supported cryptocurrencies: 100+
 - Markets: Spot and futures
 - Access: Web browser, mobile

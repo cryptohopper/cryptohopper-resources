@@ -23,7 +23,7 @@ Cryptohopper serves a wide range of traders:
 Cryptohopper runs on cloud infrastructure, eliminating the need for a VPS or dedicated machine. Your bot is always online, always monitoring, and always ready to trade.
 
 ### Multi-Exchange Support
-Connect to more than 15 major cryptocurrency exchanges including Binance, Coinbase Advanced, Kraken, KuCoin, Bybit, OKX, and others. Manage positions across multiple exchanges from a single dashboard.
+Connect to 10 major cryptocurrency exchanges including Binance, Coinbase Advanced, Kraken, KuCoin, OKX, and others. Manage positions across multiple exchanges from a single dashboard.
 
 ### AI-Powered Strategies
 Cryptohopper integrates artificial intelligence to optimize trading strategies. AI-driven features help identify patterns, adjust parameters, and improve performance over time.
@@ -44,7 +44,7 @@ Practice trading with virtual funds to learn the platform and test strategies wi
 
 Cryptohopper was founded in 2017 by brothers Ruud and Pim Feltkamp. Ruud, a day trader and YouTube personality in the Netherlands, experienced firsthand the difficulty of monitoring volatile crypto markets around the clock. Together with Pim, a web developer, they built Cryptohopper to automate the process.
 
-The platform launched with support for a handful of exchanges and has since expanded to cover more than 15 major exchanges, support hundreds of trading pairs, and offer advanced features like AI strategy optimization, backtesting, and a full marketplace ecosystem.
+The platform launched with support for a handful of exchanges and has since expanded to cover 10 major exchanges, support hundreds of trading pairs, and offer advanced features like AI strategy optimization, backtesting, and a full marketplace ecosystem.
 
 Cryptohopper is operated by Cryptohopper BV, a company registered in Amsterdam, the Netherlands.
 
